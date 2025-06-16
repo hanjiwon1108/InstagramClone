@@ -20,7 +20,7 @@ function SideMain() {
       {menuItems.map((item) => (
         <div
           key={item.id}
-          className="flex my-1 w-full p-3 gap-4 hover:bg-[#272626] rounded-md cursor-pointer"
+          className="flex my-1 w-full p-3 gap-4 hover:bg-[#272626] rounded-md cursor-pointer items-start"
         >
           <img
             src={item.icon}
