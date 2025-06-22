@@ -10,6 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {},
+      // 불필요한 애니메이션 설정 제거
     },
   },
   plugins: [],
