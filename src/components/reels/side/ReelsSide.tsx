@@ -8,9 +8,10 @@ import ShareModal from "./share/ShareModal"; // 추가
 
 interface ReelsSideProps {
   currentReelIndex: number;
+  style?: React.CSSProperties; // 스타일 속성 추가
 }
 
-const ReelsSide = ({ currentReelIndex }: ReelsSideProps) => {
+const ReelsSide = ({ currentReelIndex, style = {} }: ReelsSideProps) => {
   const currentReel = mockReels[currentReelIndex];
   const modalRef = useRef<HTMLDivElement>(null);
   const commentBtnRef = useRef<HTMLButtonElement>(null);
@@ -20,6 +21,11 @@ const ReelsSide = ({ currentReelIndex }: ReelsSideProps) => {
 
   // 각 릴스별 좋아요 수를 저장하는 객체
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+
+  // 각 릴스별 댓글 수를 저장하는 객체 추가
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>(
+    {}
+  );
 
   // 각 릴스별 북마크 상태를 저장하는 객체
   const [bookmarkedState, setBookmarkedState] = useState<
@@ -40,6 +46,13 @@ const ReelsSide = ({ currentReelIndex }: ReelsSideProps) => {
     likeCounts[currentReel.id] !== undefined
       ? likeCounts[currentReel.id]
       : currentReel.likes;
+
+  // 현재 릴스의 댓글 수 계산
+  const commentCount =
+    commentCounts[currentReel.id] !== undefined
+      ? commentCounts[currentReel.id]
+      : currentReel.comments;
+
   const isBookmarked = bookmarkedState[currentReel.id] || false;
 
   // 컴포넌트 마운트 시 초기 상태 설정
@@ -50,36 +63,20 @@ const ReelsSide = ({ currentReelIndex }: ReelsSideProps) => {
         ...prev,
         [reel.id]: prev[reel.id] !== undefined ? prev[reel.id] : reel.likes,
       }));
+
+      // 댓글 수 초기화
+      setCommentCounts((prev) => ({
+        ...prev,
+        [reel.id]: prev[reel.id] !== undefined ? prev[reel.id] : reel.comments,
+      }));
     });
   }, []);
 
-  // 릴스가 변경될 때마다 댓글 모달 닫기
+  // 릴스가 변경될 때만 댓글 모달 닫기
   useEffect(() => {
     setShowComments(false);
     setShowShareModal(false); // 공유 모달도 닫기
   }, [currentReelIndex]);
-
-  // 모달 외부 클릭 감지
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node) &&
-        commentBtnRef.current &&
-        !commentBtnRef.current.contains(event.target as Node)
-      ) {
-        setShowComments(false);
-      }
-    };
-
-    if (showComments) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showComments]);
 
   const handleLikeClick = () => {
     // 애니메이션 상태 활성화
@@ -114,6 +111,14 @@ const ReelsSide = ({ currentReelIndex }: ReelsSideProps) => {
     }));
   };
 
+  // 댓글이 추가될 때 호출될 함수
+  const handleCommentAdded = () => {
+    setCommentCounts((prev) => ({
+      ...prev,
+      [currentReel.id]: (prev[currentReel.id] || currentReel.comments) + 1,
+    }));
+  };
+
   const handleCommentClick = () => {
     // 댓글 모달 토글
     setShowComments((prev) => !prev);
@@ -127,145 +132,143 @@ const ReelsSide = ({ currentReelIndex }: ReelsSideProps) => {
   };
 
   return (
-    <>
-      <div className="flex flex-col items-center gap-6 pl-2 relative">
-        <button
-          title="좋아요"
-          className="flex flex-col items-center"
-          onClick={handleLikeClick}
+    <div
+      className="flex flex-col items-center gap-6 pl-2 relative"
+      style={style} // 부모에서 전달된 스타일 적용
+    >
+      <button
+        title="좋아요"
+        className="flex flex-col items-center"
+        onClick={handleLikeClick}
+      >
+        <div className="w-10 h-10 flex items-center justify-center">
+          {isLiked ? (
+            // 채워진 하트 SVG - 애니메이션 적용
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              className={`w-7 h-7 transition-transform duration-300 ${
+                isHeartAnimating ? "scale-125" : "scale-100"
+              }`}
+              fill="#ED4956" // 인스타그램 빨간색
+            >
+              <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+            </svg>
+          ) : (
+            // 테두리만 있는 하트 SVG - 애니메이션 적용
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              className={`w-7 h-7 transition-transform duration-300 ${
+                isHeartAnimating ? "scale-125" : "scale-100"
+              }`}
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+            </svg>
+          )}
+        </div>
+        <span className="text-xs text-white">{likeCount.toLocaleString()}</span>
+      </button>
+
+      <button
+        ref={commentBtnRef}
+        title="댓글"
+        className="flex flex-col items-center"
+        onClick={handleCommentClick}
+      >
+        <div className="w-10 h-10 flex items-center justify-center">
+          <img
+            src={comment}
+            alt="Comment"
+            className="w-7 h-7 brightness-0 invert"
+          />
+        </div>
+        <span className="text-xs text-white">
+          {commentCount.toLocaleString()}
+        </span>
+      </button>
+
+      <button
+        title="보내기"
+        className="flex flex-col items-center"
+        onClick={handleShareClick}
+      >
+        <div className="w-10 h-10 flex items-center justify-center">
+          <img
+            src={message}
+            alt="Message"
+            className="w-7 h-7 brightness-0 invert"
+          />
+        </div>
+      </button>
+
+      <button
+        title="북마크"
+        className="flex flex-col items-center"
+        onClick={handleBookmarkClick}
+      >
+        <div className="w-10 h-10 flex items-center justify-center">
+          {isBookmarked ? (
+            // 채워진 북마크 SVG
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              className="w-7 h-7 transition-transform duration-300"
+              fill="white"
+            >
+              <path d="M19,21l-7-5l-7,5V5c0-1.1,0.9-2,2-2h10c1.1,0,2,0.9,2,2V21z" />
+            </svg>
+          ) : (
+            // 테두리만 있는 북마크 SVG
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              className="w-7 h-7 transition-transform duration-300"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19,21l-7-5l-7,5V5c0-1.1,0.9-2,2-2h10c1.1,0,2,0.9,2,2V21z" />
+            </svg>
+          )}
+        </div>
+      </button>
+
+      <button title="더보기" className="flex flex-col items-center">
+        <div className="w-10 h-10 flex items-center justify-center">
+          <img src={menu} alt="Menu" className="w-7 h-7 brightness-0 invert" />
+        </div>
+      </button>
+
+      {/* 댓글 버튼 옆에 나타나는 모달 */}
+      {showComments && (
+        <div
+          ref={modalRef}
+          className="absolute z-50 sm:left-20 left-12 -top-[500px] sm:w-[350px] w-[280px] rounded-xl shadow-md"
+          style={{
+            maxHeight: "70vh",
+            overflow: "auto",
+          }}
         >
-          <div className="w-10 h-10 flex items-center justify-center">
-            {isLiked ? (
-              // 채워진 하트 SVG - 애니메이션 적용
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                className={`w-7 h-7 transition-transform duration-300 ${
-                  isHeartAnimating ? "scale-125" : "scale-100"
-                }`}
-                fill="#ED4956" // 인스타그램 빨간색
-              >
-                <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
-              </svg>
-            ) : (
-              // 테두리만 있는 하트 SVG - 애니메이션 적용
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                className={`w-7 h-7 transition-transform duration-300 ${
-                  isHeartAnimating ? "scale-125" : "scale-100"
-                }`}
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
-              </svg>
-            )}
-          </div>
-          <span className="text-xs text-white">
-            {likeCount.toLocaleString()}
-          </span>
-        </button>
+          <CommentList
+            reelId={Number(currentReel.id)}
+            onCommentAdded={handleCommentAdded}
+          />
+        </div>
+      )}
 
-        <button
-          ref={commentBtnRef}
-          title="댓글"
-          className="flex flex-col items-center"
-          onClick={handleCommentClick}
-        >
-          <div className="w-10 h-10 flex items-center justify-center">
-            <img
-              src={comment}
-              alt="Comment"
-              className="w-7 h-7 brightness-0 invert"
-            />
-          </div>
-          <span className="text-xs text-white">
-            {currentReel.comments.toLocaleString()}
-          </span>
-        </button>
-
-        <button
-          title="보내기"
-          className="flex flex-col items-center"
-          onClick={handleShareClick}
-        >
-          <div className="w-10 h-10 flex items-center justify-center">
-            <img
-              src={message}
-              alt="Message"
-              className="w-7 h-7 brightness-0 invert"
-            />
-          </div>
-        </button>
-
-        <button
-          title="북마크"
-          className="flex flex-col items-center"
-          onClick={handleBookmarkClick}
-        >
-          <div className="w-10 h-10 flex items-center justify-center">
-            {isBookmarked ? (
-              // 채워진 북마크 SVG
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                className="w-7 h-7 transition-transform duration-300"
-                fill="white"
-              >
-                <path d="M19,21l-7-5l-7,5V5c0-1.1,0.9-2,2-2h10c1.1,0,2,0.9,2,2V21z" />
-              </svg>
-            ) : (
-              // 테두리만 있는 북마크 SVG
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                className="w-7 h-7 transition-transform duration-300"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M19,21l-7-5l-7,5V5c0-1.1,0.9-2,2-2h10c1.1,0,2,0.9,2,2V21z" />
-              </svg>
-            )}
-          </div>
-        </button>
-
-        <button title="더보기" className="flex flex-col items-center">
-          <div className="w-10 h-10 flex items-center justify-center">
-            <img
-              src={menu}
-              alt="Menu"
-              className="w-7 h-7 brightness-0 invert"
-            />
-          </div>
-        </button>
-
-        {/* 댓글 버튼 옆에 나타나는 모달 */}
-        {showComments && (
-          <div
-            ref={modalRef}
-            className="absolute z-50 sm:left-20 left-12 -top-[500px] sm:w-[350px] w-[280px] rounded-xl shadow-md"
-            style={{
-              maxHeight: "70vh",
-              overflow: "auto",
-            }}
-          >
-            <CommentList reelId={Number(currentReel.id)} />
-          </div>
-        )}
-
-        {/* 공유 모달 */}
-        {showShareModal && (
-          <ShareModal onClose={() => setShowShareModal(false)} />
-        )}
-      </div>
-    </>
+      {/* 공유 모달 */}
+      {showShareModal && (
+        <ShareModal onClose={() => setShowShareModal(false)} />
+      )}
+    </div>
   );
 };
 
