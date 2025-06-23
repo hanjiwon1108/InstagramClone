@@ -6,6 +6,18 @@ export interface Comment {
   likes: number;
   daysAgo: number;
   profileColor: string;
+  replies: number; // 답글 개수 필드 추가
+}
+
+// 대댓글 인터페이스 추가
+export interface Reply {
+  id: number;
+  commentId: number; // 부모 댓글 ID
+  username: string;
+  content: string;
+  likes: number;
+  daysAgo: number;
+  profileColor: string;
 }
 
 const comments: Comment[] = [
@@ -19,6 +31,7 @@ const comments: Comment[] = [
     likes: 800,
     daysAgo: 1,
     profileColor: "#F87171",
+    replies: 4,
   },
   {
     id: 2,
@@ -28,6 +41,7 @@ const comments: Comment[] = [
     likes: 4,
     daysAgo: 1,
     profileColor: "#60A5FA",
+    replies: 2,
   },
   {
     id: 3,
@@ -38,6 +52,7 @@ const comments: Comment[] = [
     likes: 13,
     daysAgo: 1,
     profileColor: "#34D399",
+    replies: 5,
   },
   {
     id: 4,
@@ -47,6 +62,7 @@ const comments: Comment[] = [
     likes: 215,
     daysAgo: 1,
     profileColor: "#FBBF24",
+    replies: 8,
   },
   {
     id: 5,
@@ -56,6 +72,7 @@ const comments: Comment[] = [
     likes: 10,
     daysAgo: 1,
     profileColor: "#A78BFA",
+    replies: 3,
   },
 
   // 릴스 2의 댓글들
@@ -67,6 +84,7 @@ const comments: Comment[] = [
     likes: 432,
     daysAgo: 2,
     profileColor: "#EC4899",
+    replies: 7,
   },
   {
     id: 7,
@@ -76,6 +94,7 @@ const comments: Comment[] = [
     likes: 128,
     daysAgo: 2,
     profileColor: "#8B5CF6",
+    replies: 4,
   },
   {
     id: 8,
@@ -85,6 +104,7 @@ const comments: Comment[] = [
     likes: 67,
     daysAgo: 1,
     profileColor: "#3B82F6",
+    replies: 2,
   },
 
   // 릴스 3의 댓글들
@@ -96,6 +116,7 @@ const comments: Comment[] = [
     likes: 245,
     daysAgo: 3,
     profileColor: "#F59E0B",
+    replies: 6,
   },
   {
     id: 10,
@@ -105,6 +126,7 @@ const comments: Comment[] = [
     likes: 118,
     daysAgo: 2,
     profileColor: "#EF4444",
+    replies: 3,
   },
   {
     id: 11,
@@ -114,6 +136,7 @@ const comments: Comment[] = [
     likes: 56,
     daysAgo: 1,
     profileColor: "#6366F1",
+    replies: 5,
   },
 
   // 릴스 4의 댓글들
@@ -125,6 +148,7 @@ const comments: Comment[] = [
     likes: 321,
     daysAgo: 4,
     profileColor: "#06B6D4",
+    replies: 9,
   },
   {
     id: 13,
@@ -134,6 +158,7 @@ const comments: Comment[] = [
     likes: 154,
     daysAgo: 3,
     profileColor: "#8B5CF6",
+    replies: 4,
   },
 
   // 릴스 5의 댓글들
@@ -145,6 +170,7 @@ const comments: Comment[] = [
     likes: 189,
     daysAgo: 2,
     profileColor: "#F472B6",
+    replies: 6,
   },
   {
     id: 15,
@@ -154,6 +180,7 @@ const comments: Comment[] = [
     likes: 102,
     daysAgo: 1,
     profileColor: "#3B82F6",
+    replies: 3,
   },
 
   // 릴스 6의 댓글들
@@ -165,6 +192,7 @@ const comments: Comment[] = [
     likes: 87,
     daysAgo: 1,
     profileColor: "#F59E0B",
+    replies: 2,
   },
   {
     id: 17,
@@ -174,6 +202,7 @@ const comments: Comment[] = [
     likes: 76,
     daysAgo: 1,
     profileColor: "#4ADE80",
+    replies: 4,
   },
 
   // 릴스 7의 댓글들
@@ -185,6 +214,7 @@ const comments: Comment[] = [
     likes: 67,
     daysAgo: 1,
     profileColor: "#10B981",
+    replies: 1,
   },
   {
     id: 19,
@@ -194,6 +224,7 @@ const comments: Comment[] = [
     likes: 45,
     daysAgo: 1,
     profileColor: "#F59E0B",
+    replies: 0,
   },
 
   // 릴스 8의 댓글들
@@ -205,6 +236,7 @@ const comments: Comment[] = [
     likes: 234,
     daysAgo: 2,
     profileColor: "#EC4899",
+    replies: 7,
   },
   {
     id: 21,
@@ -214,6 +246,7 @@ const comments: Comment[] = [
     likes: 112,
     daysAgo: 1,
     profileColor: "#8B5CF6",
+    replies: 2,
   },
   {
     id: 22,
@@ -223,6 +256,7 @@ const comments: Comment[] = [
     likes: 65,
     daysAgo: 1,
     profileColor: "#F97316",
+    replies: 3,
   },
 
   // 릴스 9의 댓글들
@@ -234,6 +268,7 @@ const comments: Comment[] = [
     likes: 76,
     daysAgo: 1,
     profileColor: "#4ADE80",
+    replies: 5,
   },
   {
     id: 24,
@@ -243,6 +278,7 @@ const comments: Comment[] = [
     likes: 43,
     daysAgo: 1,
     profileColor: "#0EA5E9",
+    replies: 1,
   },
 
   // 릴스 10의 댓글들
@@ -254,6 +290,7 @@ const comments: Comment[] = [
     likes: 132,
     daysAgo: 2,
     profileColor: "#A78BFA",
+    replies: 3,
   },
   {
     id: 26,
@@ -263,7 +300,139 @@ const comments: Comment[] = [
     likes: 98,
     daysAgo: 1,
     profileColor: "#F87171",
+    replies: 2,
   },
+];
+
+// 대댓글 데이터 추가
+const repliesData: Reply[] = [
+  // 댓글 ID 1의 대댓글들
+  {
+    id: 101,
+    commentId: 1,
+    username: "fan_123",
+    content: "저도 너무 좋아하는 시리즈예요!",
+    likes: 45,
+    daysAgo: 1,
+    profileColor: "#34D399",
+  },
+  {
+    id: 102,
+    commentId: 1,
+    username: "drama_watcher",
+    content: "업데이트 주기가 너무 느려요 ㅠㅠ",
+    likes: 32,
+    daysAgo: 1,
+    profileColor: "#FBBF24",
+  },
+  {
+    id: 103,
+    commentId: 1,
+    username: "k_content_love",
+    content: "다음편 언제 나오나요??",
+    likes: 18,
+    daysAgo: 0,
+    profileColor: "#A78BFA",
+  },
+  {
+    id: 104,
+    commentId: 1,
+    username: "series_addict",
+    content: "작가님 다음편도 기대할게요!",
+    likes: 15,
+    daysAgo: 0,
+    profileColor: "#F87171",
+  },
+
+  // 댓글 ID 2의 대댓글들
+  {
+    id: 105,
+    commentId: 2,
+    username: "comedy_fan",
+    content: "특히 마지막 부분이 압권이었어요 ㅋㅋㅋ",
+    likes: 8,
+    daysAgo: 1,
+    profileColor: "#60A5FA",
+  },
+  {
+    id: 106,
+    commentId: 2,
+    username: "laughing_out_loud",
+    content: "이거 몇번을 봐도 웃겨요",
+    likes: 5,
+    daysAgo: 0,
+    profileColor: "#EC4899",
+  },
+
+  // 댓글 ID 3의 대댓글들
+  {
+    id: 107,
+    commentId: 3,
+    username: "romance_addict",
+    content: "순애물 찐팬이세요?",
+    likes: 7,
+    daysAgo: 1,
+    profileColor: "#8B5CF6",
+  },
+  {
+    id: 108,
+    commentId: 3,
+    username: "happy_ending",
+    content: "저도 남주 응원합니다!",
+    likes: 6,
+    daysAgo: 1,
+    profileColor: "#F59E0B",
+  },
+  {
+    id: 109,
+    commentId: 3,
+    username: "drama_queen",
+    content: "이 작품 너무 좋아요",
+    likes: 4,
+    daysAgo: 0,
+    profileColor: "#10B981",
+  },
+  {
+    id: 110,
+    commentId: 3,
+    username: "lovey_dovey",
+    content: "여주도 너무 사랑스러워요",
+    likes: 3,
+    daysAgo: 0,
+    profileColor: "#3B82F6",
+  },
+  {
+    id: 111,
+    commentId: 3,
+    username: "heart_flutter",
+    content: "이 장면에서 심쿵했어요",
+    likes: 2,
+    daysAgo: 0,
+    profileColor: "#F472B6",
+  },
+
+  // 나머지 댓글들에 대한 대댓글도 일부 추가
+  {
+    id: 112,
+    commentId: 4,
+    username: "school_story",
+    content: "우리 학교에서도 비슷한 일이...",
+    likes: 42,
+    daysAgo: 1,
+    profileColor: "#4ADE80",
+  },
+  {
+    id: 113,
+    commentId: 4,
+    username: "class_clown",
+    content: "다들 선생님 몰래 봤겠죠? ㅋㅋ",
+    likes: 35,
+    daysAgo: 1,
+    profileColor: "#F97316",
+  },
+
+  // 더 많은 대댓글 추가...
+  // 필요한 만큼 각 댓글에 대한 대댓글을 추가할 수 있습니다.
 ];
 
 // 특정 릴스 ID에 해당하는 댓글만 필터링해서 반환하는 함수
@@ -271,5 +440,13 @@ export const getCommentsByReelId = (reelId: number): Comment[] => {
   console.log("Fetching comments for reelId:", reelId); // 디버깅용
   return comments.filter((comment) => comment.reelId === reelId);
 };
+
+// 특정 댓글 ID에 해당하는 대댓글을 반환하는 함수 추가
+export const getRepliesByCommentId = (commentId: number): Reply[] => {
+  return repliesData.filter((reply) => reply.commentId === commentId);
+};
+
+// 대댓글 데이터 내보내기
+export const replies = repliesData;
 
 export default comments;
